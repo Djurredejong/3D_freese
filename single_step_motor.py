@@ -13,6 +13,10 @@ p1 = 11 #17
 p2 = 12 #18
 p3 = 15 #22
 p4 = 16 #23
+q1 = 31
+q2 = 32 
+q3 = 35
+q4 = 36
 
 def setup_motor(p1,p2,p3,p4):
   GPIO.setmode(GPIO.BOARD)
@@ -46,13 +50,16 @@ def step(a):
   GPIO.output(a[3], GPIO.HIGH)
 
 setup_motor(p1,p2,p3,p4)
-sequence = [p1,p2,p3,p4]
+setup_motor(q1,q2,q3,q4)
+seq1 = [p1,p2,p3,p4]
+seq2 = [q1,q2,q3,q4]
 for i in range(2000):
-  sequence = cw(sequence)
+  seq1 = cw(seq1)
+  seq2 = ccw(seq2)
   time.sleep(stepDelay)
 
-for i in range(2000):
-  sequence = ccw(sequence)
-  time.sleep(stepDelay)
+#for i in range(2000):
+#  sequence = ccw(sequence)
+#  time.sleep(stepDelay)
 
 GPIO.cleanup()
