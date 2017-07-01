@@ -16,6 +16,9 @@ class Motor:
   def __exit__(self):
     GPIO.cleanup()
 
+  def off(self):
+    self.__exit__()
+
   def setup(self):
     GPIO.setmode(GPIO.BOARD)
     for pin in self.seq:
@@ -46,11 +49,11 @@ class Motor:
     self.cw(int(floor(degrees/0.18)))
 
   def degrees_ccw(self,degrees=1.8):
-    self.ccw(int(steps=floor(degrees/0.18)))
+    self.ccw(int(floor(degrees/0.18)))
 
   def rotate(self, degrees=1.8):
     if degrees > 0:
       self.degrees_cw(degrees) 
-    else
-      self.degrees_ccw(degrees) 
+    else:
+      self.degrees_ccw(-degrees) 
 
