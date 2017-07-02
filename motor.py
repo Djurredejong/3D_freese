@@ -51,9 +51,14 @@ class Motor:
   def degrees_ccw(self,degrees=1.8):
     self.ccw(int(floor(degrees/0.18)))
 
-  def rotate(self, degrees=1.8):
+  def rotate_degrees(self, degrees=1.8):
     if degrees > 0:
       self.degrees_cw(degrees) 
     else:
       self.degrees_ccw(-degrees) 
 
+  def rotate_steps(self, steps=1):
+    if steps > 0:
+      self.degrees_cw(steps) 
+    else:
+      self.degrees_ccw(-steps) 
