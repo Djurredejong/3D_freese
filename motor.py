@@ -25,6 +25,10 @@ class Motor:
       GPIO.setup(pin, GPIO.OUT)
       GPIO.output(pin, GPIO.LOW)
 
+  def rest(self):
+    for pin in self.seq:
+      GPIO.output(pin, GPIO.LOW)
+
   def cw(self,steps=1):
     for i in range(steps):
       self.seq = self.seq[1:]+self.seq[:1]

@@ -1,4 +1,7 @@
 from motor import Motor
+from time import sleep
+import sys
+
 class RangeError(RuntimeError):
    def __init__(self, arg):
       self.args = arg
@@ -19,6 +22,10 @@ class Axes:
   def __print__(self):
     print("(%s, %s)mm" % self.position)
 
+  def rest(self):
+    self.m_x.rest()
+    self.m_y.rest()
+
   def position(self):
     return (self.x, self.y)
 
@@ -27,17 +34,22 @@ class Axes:
 
   def move_x(self,dist=1):
     if abs(self.x + dist) <= self.x_max:
-      self.x += m
+      self.x += dist 
       self.m_x.rotate_degrees( self.angle(dist) )
     else:
       raise RangeError("X-axis has moved to it's maximum extension") 
 
   def move_y(self,dist=1):
     if abs(self.y + dist) <= self.y_max:
-      self.y += m
+      self.y += dist 
       self.m_y.rotate_degrees( self.angle(dist) )
     else:
       raise RangeError("Y-axis has moved to it's maximum extension") 
+
+  def log(self,string):
+    sys.stdout.write('\r')
+    sys.stdout.flush()
+    sys.stdout.write(string)
 
   def move(self,dist=1.,x=1.,y=1.):
     norm = (x**2+y**2)**.5
@@ -48,8 +60,8 @@ class Axes:
     if abs(self.y+dist*y) > self.y_max: 
       raise RangeError("Y-axis has moved to it's maximum extension") 
 
-    x_steps = self.angle(dist*x)//0.18
-    y_steps = self.angle(dist*y)//0.18
+    x_steps = int(self.angle(dist*x)//0.18)
+    y_steps = int(self.angle(dist*y)//0.18)
 
     # use Bresenham algorithm to interleave X- and Y-steps
 
@@ -67,12 +79,17 @@ class Axes:
     # Start of the actual algorithm
     deltaErr = abs(y_steps/float(x_steps))
     error = deltaErr - 0.5
+    counter = 0
+    total = x_steps+y_steps
 
     for sx in range(x_steps):
+      counter+=1
+      self.log("%s/%s" % (counter, total))
       self.m_x.rotate_steps(x)
       error = error+deltaErr
       if error >= 0.5:
-        self.m_x.rotate_steps(y)
+        counter+=1
+        self.log("%s/%s" % (counter, total))
+        self.m_y.rotate_steps(y)
         error -= 1.0
-      sleep(delta_t)
-
+      sleep(max(self.m_x.stepDelay,self.m_y.stepDelay))
