@@ -1,6 +1,6 @@
 from motor import Motor
 from time import sleep
-import sys
+from logger import Logger
 
 class RangeError(RuntimeError):
    def __init__(self, arg):
@@ -46,11 +46,6 @@ class Axes:
     else:
       raise RangeError("Y-axis has moved to it's maximum extension") 
 
-  def log(self,string):
-    sys.stdout.write('\r')
-    sys.stdout.flush()
-    sys.stdout.write(string)
-
   def move(self,dist=1.,x=1.,y=1.):
     norm = (x**2+y**2)**.5
     x/=norm
@@ -63,8 +58,9 @@ class Axes:
     x_steps = int(self.angle(dist*x)//0.18)
     y_steps = int(self.angle(dist*y)//0.18)
 
-    # use Bresenham algorithm to interleave X- and Y-steps
+    logger = Logger(x_steps+y_steps)
 
+    # use Bresenham algorithm to interleave X- and Y-steps
     # Determining which 'Octant' the current angle is in
     if x_steps < 0:
       x = -1
@@ -79,17 +75,14 @@ class Axes:
     # Start of the actual algorithm
     deltaErr = abs(y_steps/float(x_steps))
     error = deltaErr - 0.5
-    counter = 0
-    total = x_steps+y_steps
 
     for sx in range(x_steps):
-      counter+=1
-      self.log("%s/%s" % (counter, total))
+      logger.step()
       self.m_x.rotate_steps(x)
       error = error+deltaErr
       if error >= 0.5:
-        counter+=1
-        self.log("%s/%s" % (counter, total))
+        logger.step()
         self.m_y.rotate_steps(y)
         error -= 1.0
       sleep(max(self.m_x.stepDelay,self.m_y.stepDelay))
+    logger.done()
