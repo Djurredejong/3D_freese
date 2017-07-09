@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 from math import floor
 from time import sleep
+from logger import Logger
 
 class Motor:
   def __init__(self,p1,p2,p3,p4):
@@ -30,14 +31,18 @@ class Motor:
       GPIO.output(pin, GPIO.LOW)
 
   def cw(self,steps=1):
+    log = logger(steps)
     for i in range(steps):
+      log.step()
       self.seq = self.seq[1:]+self.seq[:1]
       self.step()
       if steps>1:
         sleep(self.stepDelay)
 
   def ccw(self,steps=1):
+    log = logger(steps)
     for i in range(steps):
+      log.step()
       self.seq = self.seq[3:]+self.seq[:3]
       self.step()
       if steps>1:
