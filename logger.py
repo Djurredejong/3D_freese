@@ -8,6 +8,9 @@ class Logger:
     self.current     = 0
     self.log_n_step  = 1
 
+  def manual(self, string):
+    sys.stdout.write("%s\n" % string)
+
   def step(self):
     self.current += 1
     if self.current % self.log_n_step == 0:

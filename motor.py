@@ -31,22 +31,24 @@ class Motor:
       GPIO.output(pin, GPIO.LOW)
 
   def cw(self,steps=1):
-    log = logger(steps)
+    log = Logger(steps)
     for i in range(steps):
       log.step()
       self.seq = self.seq[1:]+self.seq[:1]
       self.step()
       if steps>1:
         sleep(self.stepDelay)
+    log.done()
 
   def ccw(self,steps=1):
-    log = logger(steps)
+    log = Logger(steps)
     for i in range(steps):
       log.step()
       self.seq = self.seq[3:]+self.seq[:3]
       self.step()
       if steps>1:
         sleep(self.stepDelay)
+    log.done()
   
   def step(self):
     GPIO.output(self.seq[0], GPIO.LOW)

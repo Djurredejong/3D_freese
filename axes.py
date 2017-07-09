@@ -58,7 +58,7 @@ class Axes:
     x_steps = int(self.angle(dist*x)//0.18)
     y_steps = int(self.angle(dist*y)//0.18)
 
-    logger = Logger(x_steps+y_steps)
+    logger = Logger((x_steps+y_steps))
 
     # use Bresenham algorithm to interleave X- and Y-steps
     # Determining which 'Octant' the current angle is in
@@ -72,9 +72,11 @@ class Axes:
       x,y = y,x
       x_steps,y_steps = y_steps,x_steps
 
+
     # Start of the actual algorithm
     deltaErr = abs(y_steps/float(x_steps))
     error = deltaErr - 0.5
+    logger.manual("norm: %s, x: %s, y: %s, dist: %s, x_s: %s, y_s: %s, dE: %s, E: %s" % (norm,x,y,dist,x_steps,y_steps,deltaErr,error))
 
     for sx in range(x_steps):
       logger.step()
@@ -85,4 +87,5 @@ class Axes:
         self.m_y.rotate_steps(y)
         error -= 1.0
       sleep(max(self.m_x.stepDelay,self.m_y.stepDelay))
-    logger.done()
+
+    #logger.done()
